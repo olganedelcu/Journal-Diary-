@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { BookOpen, Mail, Lock, Loader } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function AuthPage() {
   const { signIn, signUp } = useAuth();
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,7 +21,11 @@ export default function AuthPage() {
 
     if (isLogin) {
       const err = await signIn(email, password);
-      if (err) setError(err);
+      if (err) {
+        setError(err);
+      } else {
+        navigate('/', { replace: true });
+      }
     } else {
       const err = await signUp(email, password);
       if (err) {

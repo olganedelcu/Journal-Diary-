@@ -45,7 +45,7 @@ export default function WelcomePage() {
 
           <button
             className="welcome-card"
-            onClick={() => navigate('/entries')}
+            onClick={() => navigate('/timeline')}
           >
             <div className="welcome-card-icon">
               <Clock size={28} />

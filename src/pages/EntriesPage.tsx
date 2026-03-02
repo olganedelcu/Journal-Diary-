@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import {
-  Eye, Pencil, Trash2, Search, BookOpen,
-  PenLine, LogOut, Clock, ImageIcon,
+  Trash2, Search, BookOpen,
+  PenLine, LogOut, Clock, ImageIcon, Calendar,
 } from 'lucide-react';
 import type { JournalEntry } from '../types/journal';
 import { getEntries, deleteEntry } from '../storage/journalStorage';
@@ -23,13 +23,16 @@ export default function EntriesPage() {
     });
   }, []);
 
-  const filtered = entries.filter(
-    (e) =>
-      e.title.toLowerCase().includes(search.toLowerCase()) ||
-      e.content.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = entries
+    .filter(
+      (e) =>
+        e.title.toLowerCase().includes(search.toLowerCase()) ||
+        e.content.toLowerCase().includes(search.toLowerCase())
+    )
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-  async function handleDelete(id: string) {
+  async function handleDelete(id: string, e: React.MouseEvent) {
+    e.stopPropagation();
     if (!confirm('Are you sure you want to delete this entry?')) return;
     await deleteEntry(id);
     const updated = await getEntries();
@@ -54,43 +57,41 @@ export default function EntriesPage() {
 
   return (
     <div className="entries-page">
-      {/* Welcome banner with quick-action cards */}
-      <div className="entries-welcome">
-        <div className="entries-welcome-top">
-          <div className="entries-welcome-text">
-            <h1>Welcome</h1>
-            <p>Your personal digital journal starts here</p>
-          </div>
-          <div className="entries-welcome-user">
-            <span className="welcome-email">{user?.email}</span>
-            <button className="btn btn-ghost btn-sm" onClick={signOut}>
-              <LogOut size={16} />
-            </button>
-          </div>
-        </div>
+      {/* Topbar: email + logout */}
+      <div className="welcome-topbar">
+        <span className="welcome-email">{user?.email}</span>
+        <button className="btn btn-ghost btn-sm" onClick={signOut}>
+          <LogOut size={16} />
+        </button>
+      </div>
 
-        <div className="entries-welcome-grid">
+      {/* Hero section: welcome + icon cards */}
+      <div className="entries-hero">
+        <h1>Welcome</h1>
+        <p className="welcome-subtitle">Your personal digital journal starts here</p>
+
+        <div className="welcome-grid">
           <button className="welcome-card" onClick={() => navigate('/entries/new')}>
             <div className="welcome-card-icon">
-              <PenLine size={24} />
+              <PenLine size={28} />
             </div>
             <span>Write</span>
           </button>
           <button className="welcome-card" onClick={() => document.getElementById('search-input')?.focus()}>
             <div className="welcome-card-icon">
-              <BookOpen size={24} />
+              <BookOpen size={28} />
             </div>
             <span>Journal</span>
           </button>
-          <button className="welcome-card" onClick={() => document.querySelector('.entries-table-wrapper')?.scrollIntoView({ behavior: 'smooth' })}>
+          <button className="welcome-card" onClick={() => navigate('/timeline')}>
             <div className="welcome-card-icon">
-              <Clock size={24} />
+              <Clock size={28} />
             </div>
             <span>Timeline</span>
           </button>
           <button className="welcome-card" onClick={() => navigate('/entries/new')}>
             <div className="welcome-card-icon">
-              <ImageIcon size={24} />
+              <ImageIcon size={28} />
             </div>
             <span>Photos</span>
           </button>
@@ -98,94 +99,73 @@ export default function EntriesPage() {
       </div>
 
       {/* Search */}
-      <div className="search-bar">
-        <Search size={18} className="search-icon" />
-        <input
-          id="search-input"
-          type="text"
-          placeholder="Search by title or content..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </div>
+      <div className="entries-content">
+        <div className="search-bar">
+          <Search size={18} className="search-icon" />
+          <input
+            id="search-input"
+            type="text"
+            placeholder="Search by title or content..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
 
-      {/* Content */}
-      {filtered.length === 0 ? (
-        <div className="empty-state">
-          <BookOpen size={48} />
-          <h2>No entries yet</h2>
-          <p>Start capturing your thoughts, memories, and moments.</p>
-          <button
-            className="btn btn-primary"
-            onClick={() => navigate('/entries/new')}
-          >
-            <PenLine size={18} />
-            Write Your First Entry
-          </button>
-        </div>
-      ) : (
-        <div className="entries-table-wrapper">
-          <table className="entries-table">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Title</th>
-                <th>Preview</th>
-                <th>Images</th>
-                <th>Last Updated</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((entry) => (
-                <tr key={entry.id}>
-                  <td className="td-date">
-                    {format(new Date(entry.createdAt), 'MMM dd, yyyy')}
-                  </td>
-                  <td className="td-title">{entry.title}</td>
-                  <td className="td-preview">{truncate(entry.content, 60)}</td>
-                  <td className="td-images">
-                    {entry.images.length > 0 ? (
-                      <span className="image-badge">
-                        {entry.images.length} photo
-                        {entry.images.length > 1 ? 's' : ''}
+        {/* Diary page cards */}
+        {filtered.length === 0 ? (
+          <div className="empty-state">
+            <BookOpen size={48} />
+            <h2>No entries yet</h2>
+            <p>Start capturing your thoughts, memories, and moments.</p>
+            <button
+              className="btn btn-primary"
+              onClick={() => navigate('/entries/new')}
+            >
+              <PenLine size={18} />
+              Write Your First Entry
+            </button>
+          </div>
+        ) : (
+          <div className="diary-grid">
+            {filtered.map((entry) => (
+              <article
+                key={entry.id}
+                className="diary-card"
+                onClick={() => navigate(`/entries/${entry.id}`)}
+              >
+                {entry.images.length > 0 && (
+                  <div className="diary-card-img">
+                    <img src={entry.images[0].url} alt="" />
+                  </div>
+                )}
+                <div className="diary-card-body">
+                  <h3 className="diary-card-title">{entry.title}</h3>
+                  <p className="diary-card-text">{truncate(entry.content, 150)}</p>
+                  <div className="diary-card-footer">
+                    <span className="diary-card-date">
+                      <Calendar size={14} />
+                      {format(new Date(entry.createdAt), 'MMM dd, yyyy')}
+                    </span>
+                    {entry.images.length > 0 && (
+                      <span className="diary-card-photos">
+                        <ImageIcon size={14} />
+                        {entry.images.length}
                       </span>
-                    ) : (
-                      <span className="muted">-</span>
                     )}
-                  </td>
-                  <td className="td-date">
-                    {format(new Date(entry.updatedAt), 'MMM dd, yyyy')}
-                  </td>
-                  <td className="td-actions">
                     <button
-                      className="icon-btn"
-                      title="View"
-                      onClick={() => navigate(`/entries/${entry.id}`)}
-                    >
-                      <Eye size={18} />
-                    </button>
-                    <button
-                      className="icon-btn"
-                      title="Edit"
-                      onClick={() => navigate(`/entries/${entry.id}/edit`)}
-                    >
-                      <Pencil size={18} />
-                    </button>
-                    <button
-                      className="icon-btn icon-btn-danger"
+                      className="diary-card-delete icon-btn icon-btn-danger"
                       title="Delete"
-                      onClick={() => handleDelete(entry.id)}
+                      onClick={(e) => handleDelete(entry.id, e)}
                     >
-                      <Trash2 size={18} />
+                      <Trash2 size={16} />
                     </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

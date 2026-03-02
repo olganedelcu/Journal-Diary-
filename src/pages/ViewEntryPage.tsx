@@ -61,107 +61,57 @@ export default function ViewEntryPage() {
 
       <div className="view-header">
         <h1>{entry.title}</h1>
-      </div>
-
-      <div className="view-grid">
-        <div className="view-main">
-          <div className="card">
-            <h2 className="card-title">
-              <FileText size={20} />
-              Entry Details
-            </h2>
-            <div className="card-meta">
-              <div className="meta-item">
-                <Calendar size={16} />
-                <span>Date Written:</span>
-                <strong>
-                  {format(new Date(entry.createdAt), 'MMMM dd, yyyy')}
-                </strong>
-              </div>
-              <div className="meta-item">
-                <span>Status:</span>
-                <span className="status-badge">
-                  {entry.images.length > 0 ? 'With Photos' : 'Text Only'}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="card">
-            <h2 className="card-title">My Writing</h2>
-            <div className="entry-content">
-              {entry.content ? (
-                entry.content.split('\n').map((para, i) => (
-                  <p key={i}>{para}</p>
-                ))
-              ) : (
-                <p className="empty-note">No writing added yet.</p>
-              )}
-            </div>
-          </div>
-
+        <div className="view-meta-row">
+          <span className="view-meta-item">
+            <Calendar size={14} />
+            {format(new Date(entry.createdAt), 'MMMM dd, yyyy')}
+          </span>
+          <span className="view-meta-item">
+            <Clock size={14} />
+            Updated {format(new Date(entry.updatedAt), 'MMM dd, yyyy')}
+          </span>
+          <span className="view-meta-item">
+            <FileText size={14} />
+            {entry.content.split(/\s+/).filter(Boolean).length} words
+          </span>
           {entry.images.length > 0 && (
-            <div className="card">
-              <h2 className="card-title">
-                <ImageIcon size={20} />
-                Photos
-              </h2>
-              <div className="image-gallery">
-                {entry.images.map((img) => (
-                  <div key={img.id} className="gallery-item">
-                    <img src={img.url} alt={img.name} />
-                    <span className="gallery-label">{img.name}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <span className="view-meta-item">
+              <ImageIcon size={14} />
+              {entry.images.length} photo{entry.images.length > 1 ? 's' : ''}
+            </span>
           )}
         </div>
+      </div>
 
-        <div className="view-sidebar">
-          <div className="card card-accent">
-            <h2 className="card-title">Timeline</h2>
-            <div className="timeline">
-              <div className="timeline-item">
-                <div className="timeline-dot blue" />
-                <div>
-                  <strong>Entry Created</strong>
-                  <span>
-                    {format(new Date(entry.createdAt), 'MMM dd, yyyy')}
-                  </span>
-                </div>
-              </div>
-              <div className="timeline-item">
-                <div className="timeline-dot green" />
-                <div>
-                  <strong>Last Updated</strong>
-                  <span>
-                    {format(new Date(entry.updatedAt), 'MMM dd, yyyy')}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="card">
-            <h2 className="card-title">
-              <Clock size={20} />
-              Quick Stats
-            </h2>
-            <div className="stats">
-              <div className="stat-item">
-                <span className="stat-value">
-                  {entry.content.split(/\s+/).filter(Boolean).length}
-                </span>
-                <span className="stat-label">Words</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-value">{entry.images.length}</span>
-                <span className="stat-label">Photos</span>
-              </div>
-            </div>
+      <div className="view-body">
+        <div className="card">
+          <div className="entry-content">
+            {entry.content ? (
+              entry.content.split('\n').map((para, i) => (
+                <p key={i}>{para}</p>
+              ))
+            ) : (
+              <p className="empty-note">No writing added yet.</p>
+            )}
           </div>
         </div>
+
+        {entry.images.length > 0 && (
+          <div className="card">
+            <h2 className="card-title">
+              <ImageIcon size={20} />
+              Photos
+            </h2>
+            <div className="image-gallery">
+              {entry.images.map((img) => (
+                <div key={img.id} className="gallery-item">
+                  <img src={img.url} alt={img.name} />
+                  <span className="gallery-label">{img.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

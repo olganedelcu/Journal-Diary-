@@ -1,0 +1,185 @@
+import { useState, useEffect, useRef } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
+import { ArrowLeft, Save, ImagePlus, X, Loader } from 'lucide-react';
+import type { JournalEntry, JournalImage } from '../types/journal';
+import {
+  getEntry,
+  saveEntry,
+  uploadImage,
+  deleteImage,
+} from '../storage/journalStorage';
+
+export default function EditEntryPage() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const isNew = id === 'new';
+
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [images, setImages] = useState<JournalImage[]>([]);
+  const [createdAt, setCreatedAt] = useState(new Date().toISOString());
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  // We need the entry ID for uploading images before save
+  const [entryId] = useState(() => (isNew ? uuidv4() : id!));
+
+  useEffect(() => {
+    if (isNew) return;
+    if (!id) return;
+    getEntry(id).then((found) => {
+      if (found) {
+        setTitle(found.title);
+        setContent(found.content);
+        setImages(found.images);
+        setCreatedAt(found.createdAt);
+      } else {
+        navigate('/entries');
+      }
+    });
+  }, [id, isNew, navigate]);
+
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploading(true);
+
+    for (const file of Array.from(files)) {
+      const uploaded = await uploadImage(file, entryId);
+      if (uploaded) {
+        setImages((prev) => [...prev, uploaded]);
+      }
+    }
+
+    setUploading(false);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  }
+
+  async function removeImage(imgId: string) {
+    const img = images.find((i) => i.id === imgId);
+    if (img?.storagePath) {
+      await deleteImage(img.storagePath);
+    }
+    setImages((prev) => prev.filter((i) => i.id !== imgId));
+  }
+
+  async function handleSave() {
+    if (!title.trim()) {
+      alert('Please add a title for your journal entry.');
+      return;
+    }
+
+    setSaving(true);
+
+    const entry: JournalEntry = {
+      id: entryId,
+      title: title.trim(),
+      content,
+      images,
+      createdAt,
+      updatedAt: new Date().toISOString(),
+    };
+
+    await saveEntry(entry);
+    setSaving(false);
+    navigate(`/entries/${entry.id}`);
+  }
+
+  return (
+    <div className="edit-page">
+      <div className="edit-topbar">
+        <button
+          className="btn btn-ghost"
+          onClick={() =>
+            isNew ? navigate('/entries') : navigate(`/entries/${id}`)
+          }
+        >
+          <ArrowLeft size={18} />
+          Cancel
+        </button>
+        <h2>{isNew ? 'New Diary Page' : 'Edit Entry'}</h2>
+        <button
+          className="btn btn-primary"
+          onClick={handleSave}
+          disabled={saving}
+        >
+          {saving ? <Loader size={16} className="spin" /> : <Save size={16} />}
+          {saving ? 'Saving...' : 'Save Entry'}
+        </button>
+      </div>
+
+      <div className="edit-form">
+        <div className="form-group">
+          <label htmlFor="title">Title</label>
+          <input
+            id="title"
+            type="text"
+            className="form-input"
+            placeholder="Give your entry a title..."
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="content">Your Writing</label>
+          <textarea
+            id="content"
+            className="form-textarea"
+            placeholder="Write your thoughts, memories, reflections..."
+            rows={14}
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Photos</label>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleImageUpload}
+            style={{ display: 'none' }}
+          />
+          <button
+            className="btn btn-secondary"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+          >
+            {uploading ? (
+              <Loader size={18} className="spin" />
+            ) : (
+              <ImagePlus size={18} />
+            )}
+            {uploading ? 'Uploading...' : 'Upload Images'}
+          </button>
+
+          {images.length > 0 && (
+            <div className="edit-image-grid">
+              {images.map((img) => (
+                <div key={img.id} className="edit-image-item">
+                  <img src={img.url} alt={img.name} />
+                  <button
+                    className="edit-image-remove"
+                    onClick={() => removeImage(img.id)}
+                  >
+                    <X size={14} />
+                  </button>
+                  <span className="edit-image-name">{img.name}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

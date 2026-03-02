@@ -1,7 +1,28 @@
 import type { JournalEntry, JournalImage } from '../types/journal';
 import { supabase } from './supabase';
 
-// ---- Entries (Supabase table: journal_entries) ----
+// ---- Helpers ----
+
+async function getUserId(): Promise<string> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error('Not signed in');
+  return user.id;
+}
+
+function rowToEntry(row: Record<string, unknown>): JournalEntry {
+  return {
+    id: row.id as string,
+    title: row.title as string,
+    content: (row.content as string) ?? '',
+    images: (row.images as JournalImage[]) ?? [],
+    createdAt: row.created_at as string,
+    updatedAt: row.updated_at as string,
+  };
+}
+
+// ---- Entries ----
 
 export async function getEntries(): Promise<JournalEntry[]> {
   const { data, error } = await supabase
@@ -13,7 +34,6 @@ export async function getEntries(): Promise<JournalEntry[]> {
     console.error('Failed to fetch entries:', error.message);
     return [];
   }
-
   return (data ?? []).map(rowToEntry);
 }
 
@@ -29,9 +49,12 @@ export async function getEntry(id: string): Promise<JournalEntry | undefined> {
 }
 
 export async function saveEntry(entry: JournalEntry): Promise<void> {
+  const userId = await getUserId();
   const now = new Date().toISOString();
+
   const row = {
     id: entry.id,
+    user_id: userId,
     title: entry.title,
     content: entry.content,
     images: entry.images,
@@ -69,14 +92,15 @@ export async function deleteEntry(id: string): Promise<void> {
   }
 }
 
-// ---- Image uploads (Supabase Storage bucket: diary-images) ----
+// ---- Image uploads (bucket: diary-images, folder: userId/entryId/) ----
 
 export async function uploadImage(
   file: File,
   entryId: string
 ): Promise<JournalImage | null> {
+  const userId = await getUserId();
   const ext = file.name.split('.').pop() ?? 'jpg';
-  const path = `${entryId}/${crypto.randomUUID()}.${ext}`;
+  const path = `${userId}/${entryId}/${crypto.randomUUID()}.${ext}`;
 
   const { error } = await supabase.storage
     .from('diary-images')
@@ -108,17 +132,4 @@ export async function deleteImage(storagePath: string): Promise<void> {
   if (error) {
     console.error('Failed to delete image:', error.message);
   }
-}
-
-// ---- Helpers ----
-
-function rowToEntry(row: Record<string, unknown>): JournalEntry {
-  return {
-    id: row.id as string,
-    title: row.title as string,
-    content: (row.content as string) ?? '',
-    images: (row.images as JournalImage[]) ?? [],
-    createdAt: row.created_at as string,
-    updatedAt: row.updated_at as string,
-  };
 }

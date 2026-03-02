@@ -14,7 +14,7 @@ export default function EditEntryPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const isNew = id === 'new';
+  const isNew = !id;
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -23,8 +23,7 @@ export default function EditEntryPage() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
 
-  // We need the entry ID for uploading images before save
-  const [entryId] = useState(() => (isNew ? uuidv4() : id!));
+  const [entryId] = useState(() => (isNew ? uuidv4() : id));
 
   useEffect(() => {
     if (isNew) return;
@@ -96,9 +95,7 @@ export default function EditEntryPage() {
       <div className="edit-topbar">
         <button
           className="btn btn-ghost"
-          onClick={() =>
-            isNew ? navigate('/entries') : navigate(`/entries/${id}`)
-          }
+          onClick={() => navigate(isNew ? '/entries' : `/entries/${id}`)}
         >
           <ArrowLeft size={18} />
           Cancel

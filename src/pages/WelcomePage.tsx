@@ -1,11 +1,21 @@
 import { useNavigate } from 'react-router-dom';
-import { PenLine, BookOpen, Clock, ImageIcon } from 'lucide-react';
+import { PenLine, BookOpen, Clock, ImageIcon, LogOut } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export default function WelcomePage() {
   const navigate = useNavigate();
+  const { user, signOut } = useAuth();
 
   return (
     <div className="welcome-page">
+      <div className="welcome-topbar">
+        <span className="welcome-email">{user?.email}</span>
+        <button className="btn btn-ghost btn-sm" onClick={signOut}>
+          <LogOut size={16} />
+          Sign Out
+        </button>
+      </div>
+
       <div className="welcome-content">
         <h1>Welcome</h1>
         <p className="welcome-subtitle">

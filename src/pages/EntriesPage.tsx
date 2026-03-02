@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
-import { Plus, Eye, Pencil, Trash2, Search, BookOpen, PenLine } from 'lucide-react';
+import { Plus, Eye, Pencil, Trash2, Search, BookOpen, PenLine, LogOut } from 'lucide-react';
 import type { JournalEntry } from '../types/journal';
 import { getEntries, deleteEntry } from '../storage/journalStorage';
+import { useAuth } from '../context/AuthContext';
 
 export default function EntriesPage() {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { signOut } = useAuth();
 
   useEffect(() => {
     getEntries().then((data) => {
@@ -53,13 +55,19 @@ export default function EntriesPage() {
           <BookOpen size={28} />
           My Journal
         </h1>
-        <button
-          className="btn btn-primary"
-          onClick={() => navigate('/entries/new')}
-        >
-          <Plus size={18} />
-          Add Diary Page
-        </button>
+        <div className="entries-header-actions">
+          <button
+            className="btn btn-primary"
+            onClick={() => navigate('/entries/new')}
+          >
+            <Plus size={18} />
+            Add Diary Page
+          </button>
+          <button className="btn btn-ghost btn-sm" onClick={signOut}>
+            <LogOut size={16} />
+            Sign Out
+          </button>
+        </div>
       </div>
 
       <div className="search-bar">

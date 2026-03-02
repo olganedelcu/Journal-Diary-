@@ -4,13 +4,14 @@ import { format } from 'date-fns';
 import {
   ArrowLeft,
   Pencil,
+  Trash2,
   Calendar,
   Clock,
   ImageIcon,
   FileText,
 } from 'lucide-react';
 import type { JournalEntry } from '../types/journal';
-import { getEntry } from '../storage/journalStorage';
+import { getEntry, deleteEntry } from '../storage/journalStorage';
 
 export default function ViewEntryPage() {
   const { id } = useParams<{ id: string }>();
@@ -27,6 +28,13 @@ export default function ViewEntryPage() {
       }
     });
   }, [id, navigate]);
+
+  async function handleDelete() {
+    if (!entry) return;
+    if (!confirm('Are you sure you want to delete this entry?')) return;
+    await deleteEntry(entry.id);
+    navigate('/entries');
+  }
 
   if (!entry) {
     return (
@@ -46,9 +54,13 @@ export default function ViewEntryPage() {
           Back to Journal
         </button>
         <div className="view-topbar-actions">
-          <span className="status-badge">
-            {entry.images.length > 0 ? 'With Photos' : 'Text Only'}
-          </span>
+          <button
+            className="icon-btn icon-btn-danger"
+            title="Delete"
+            onClick={handleDelete}
+          >
+            <Trash2 size={16} />
+          </button>
           <button
             className="btn btn-primary"
             onClick={() => navigate(`/entries/${entry.id}/edit`)}

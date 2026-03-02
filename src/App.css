@@ -246,7 +246,7 @@ body {
 
 /* ===== Photos Page ===== */
 .photos-page {
-  max-width: 12500px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 32px 24px;
   min-height: 100vh;
@@ -255,6 +255,7 @@ body {
 .photos-topbar {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 16px;
   margin-bottom: 32px;
 }
@@ -969,7 +970,10 @@ body {
     font-size: 24px;
   }
   .view-meta-row {
-    gap: 12px;
+    gap: 10px;
+  }
+  .view-meta-item {
+    font-size: 12px;
   }
 
   .welcome-content h1 {
@@ -982,7 +986,7 @@ body {
   }
 
   .entries-hero {
-    padding: 64px 20px 28px;
+    padding: 56px 16px 20px;
   }
   .entries-content {
     padding: 0 16px 40px;
@@ -1001,6 +1005,7 @@ body {
   .edit-topbar h2 {
     order: -1;
     width: 100%;
+    font-size: 16px;
   }
 
   .edit-form {
@@ -1008,7 +1013,7 @@ body {
   }
 
   .card {
-    padding: 20px;
+    padding: 18px;
   }
 
   .auth-card {
@@ -1016,21 +1021,111 @@ body {
   }
 
   .view-page {
-    padding: 24px 16px;
+    padding: 20px 16px;
   }
   .edit-page {
+    padding: 20px 16px;
+  }
+
+  /* Diary cards → compact notes feel */
+  .diary-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .diary-card {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    box-shadow: none;
+  }
+  .diary-card:last-child {
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .diary-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+  .diary-card-img {
+    height: 140px;
+  }
+  .diary-card-body {
+    padding: 14px 16px 16px;
+  }
+  .diary-card-title {
+    font-size: 16px;
+  }
+  .diary-card-text {
+    font-size: 13px;
+    margin-bottom: 10px;
+    line-height: 1.5;
+  }
+
+  /* Delete button: larger tap target */
+  .diary-card-delete {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+  }
+
+  /* Photos page */
+  .photos-page {
     padding: 24px 16px;
+  }
+  .photos-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+  }
+
+  /* Search bar */
+  .search-bar {
+    max-width: 100%;
+  }
+
+  /* Streak widget */
+  .streak-widget {
+    padding: 0 16px 24px;
+  }
+  .streak-count {
+    font-size: 20px;
+  }
+
+  /* Welcome topbar */
+  .welcome-topbar {
+    padding: 12px 16px;
+  }
+
+  /* View page actions */
+  .view-topbar-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  /* Entry content reading */
+  .entry-content p {
+    font-size: 15px;
+    line-height: 1.7;
   }
 }
 
 @media (max-width: 480px) {
   .welcome-content {
-    padding: 60px 20px;
+    padding: 48px 16px;
+  }
+  .welcome-content h1 {
+    font-size: 30px;
+  }
+  .welcome-subtitle {
+    font-size: 15px;
+    margin-bottom: 40px;
   }
 
   .welcome-card-icon {
-    width: 64px;
-    height: 64px;
+    width: 60px;
+    height: 60px;
+  }
+  .welcome-card span {
+    font-size: 13px;
   }
 
   .stats {
@@ -1045,10 +1140,30 @@ body {
     grid-template-columns: 1fr 1fr;
   }
 
-  .diary-grid {
-    grid-template-columns: 1fr;
+  /* Hide card images on small screens for notes feel */
+  .diary-card-img {
+    height: 100px;
   }
 
+  .edit-form {
+    padding: 16px;
+  }
+
+  .photos-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .view-header h1 {
+    font-size: 20px;
+  }
+
+  .entries-hero {
+    padding: 48px 16px 16px;
+  }
+  .entries-hero .welcome-grid {
+    gap: 14px;
+  }
 }
 
 /* ===== Diary Page Cards ===== */
@@ -1283,23 +1398,41 @@ body {
   .timeline-line {
     left: 16px;
   }
+  .timeline-node {
+    margin-bottom: 24px;
+  }
   .timeline-node-dot {
     left: 16px;
     top: 16px;
+    width: 12px;
+    height: 12px;
   }
   .timeline-node.left .timeline-node-strike,
   .timeline-node.right .timeline-node-strike {
-    left: 24px;
+    left: 22px;
     right: auto;
-    width: 20px;
+    width: 16px;
+    top: 21px;
   }
   .timeline-node.left .timeline-node-card,
   .timeline-node.right .timeline-node-card {
-    margin-left: 52px;
+    margin-left: 46px;
     margin-right: 0;
+  }
+  .timeline-node-card {
+    border-radius: var(--radius);
+  }
+  .timeline-node-content {
+    padding: 12px 14px;
+  }
+  .timeline-node-content h4 {
+    font-size: 14px;
+  }
+  .timeline-node-content p {
+    font-size: 12px;
   }
 
   .timeline-page {
-    padding: 24px 16px;
+    padding: 20px 16px;
   }
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
-import { ArrowLeft, ImageIcon } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import type { JournalEntry } from '../types/journal';
 import { getEntries } from '../storage/journalStorage';
 
@@ -54,23 +54,13 @@ export default function TimelinePage() {
               onClick={() => navigate(`/entries/${entry.id}`)}
             >
               <div className="timeline-node-dot" />
+              <div className="timeline-node-strike" />
               <div className="timeline-node-card">
-                {entry.images.length > 0 && (
-                  <div className="timeline-node-img">
-                    <img src={entry.images[0].url} alt="" />
-                  </div>
-                )}
                 <div className="timeline-node-content">
                   <span className="timeline-node-date">
                     {format(new Date(entry.createdAt), 'MMM dd, yyyy')}
                   </span>
-                  <h4>{entry.title}</h4>
                   <p>{entry.content.length > 80 ? entry.content.slice(0, 80) + '...' : entry.content}</p>
-                  {entry.images.length > 0 && (
-                    <span className="timeline-node-photos">
-                      <ImageIcon size={12} /> {entry.images.length} photo{entry.images.length > 1 ? 's' : ''}
-                    </span>
-                  )}
                 </div>
               </div>
             </div>

@@ -65,11 +65,8 @@ export default function EntriesPage() {
         </button>
       </div>
 
-      {/* Hero section: welcome + icon cards */}
+      {/* Hero section: icon cards */}
       <div className="entries-hero">
-        <h1>Welcome</h1>
-        <p className="welcome-subtitle">Your personal digital journal starts here</p>
-
         <div className="welcome-grid">
           <button className="welcome-card" onClick={() => navigate('/entries/new')}>
             <div className="welcome-card-icon">

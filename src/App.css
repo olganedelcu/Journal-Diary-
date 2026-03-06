@@ -444,7 +444,7 @@ body {
 
 /* ===== View Page ===== */
 .view-page {
-  max-width: 780px;
+  max-width: 960px;
   margin: 0 auto;
   padding: 32px 24px;
   min-height: 100vh;
@@ -468,7 +468,7 @@ body {
 }
 
 .view-header h1 {
-  font-size: 32px;
+  font-size: 36px;
   font-weight: 700;
   color: var(--gray-900);
   margin-bottom: 12px;
@@ -510,9 +510,10 @@ body {
   background: var(--white);
   border: 1px solid var(--gray-200);
   border-radius: var(--radius-lg);
-  padding: 28px;
+  padding: 40px 48px;
   margin-bottom: 20px;
   box-shadow: var(--shadow-soft);
+  min-height: 400px;
 }
 
 .card-accent {
@@ -547,9 +548,10 @@ body {
 }
 
 .entry-content p {
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   color: var(--gray-600);
-  line-height: 1.8;
+  font-size: 16px;
+  line-height: 1.9;
 }
 
 .entry-content .empty-note {
@@ -661,7 +663,7 @@ body {
 
 /* ===== Edit Page ===== */
 .edit-page {
-  max-width: 800px;
+  max-width: 960px;
   margin: 0 auto;
   padding: 32px 24px;
   min-height: 100vh;
@@ -684,8 +686,9 @@ body {
   background: var(--white);
   border: 1px solid var(--gray-200);
   border-radius: var(--radius-lg);
-  padding: 36px;
+  padding: 40px 48px;
   box-shadow: var(--shadow-soft);
+  min-height: 600px;
 }
 
 .form-group {
@@ -717,15 +720,16 @@ body {
 
 .form-textarea {
   width: 100%;
-  padding: 16px;
+  padding: 20px 24px;
   border: 1px solid var(--gray-200);
   border-radius: var(--radius);
-  font-size: 15px;
+  font-size: 16px;
   color: var(--gray-800);
   outline: none;
   resize: vertical;
   font-family: inherit;
-  line-height: 1.7;
+  line-height: 1.8;
+  min-height: 420px;
   transition: all 0.2s ease;
 }
 .form-textarea:focus {
@@ -1010,10 +1014,12 @@ body {
 
   .edit-form {
     padding: 20px;
+    min-height: 400px;
   }
 
   .card {
-    padding: 18px;
+    padding: 20px 18px;
+    min-height: 260px;
   }
 
   .auth-card {
@@ -1147,6 +1153,7 @@ body {
 
   .edit-form {
     padding: 16px;
+    min-height: 360px;
   }
 
   .photos-grid {

@@ -118,7 +118,7 @@ export default function EditEntryPage() {
             id="content"
             className="form-textarea"
             placeholder="Write your thoughts, memories, reflections..."
-            rows={14}
+            rows={20}
             value={content}
             onChange={(e) => setContent(e.target.value)}
           />
